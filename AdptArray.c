@@ -37,3 +37,56 @@ PAdptArray CreateAdptArray(COPY_FUNC copy_func, DEL_FUNC del_func, PRINT_FUNC pr
     return arr;
 }
 
+
+//deletes/frees the array
+void DeleteAdptArray(PAdptArray arr) {
+    for (int i=0 ; i< arr->size ; i++){
+        if (arr->elements[i] != NULL){
+           arr->del_func(arr->elements[i]);
+        }
+    }
+    free(arr->elements);
+    free(arr);
+}
+
+
+
+//a helping function to resize the array capacity , used in SetAdptArrayAt function
+ static void change_size(PAdptArray arr, int NEW_CAPACITY) {
+    PElement* elems = (PElement*) realloc(arr->elements, NEW_CAPACITY * sizeof(PElement));
+    if (elems == NULL) {
+        return;//did not allocate
+    }
+    arr->elements = elems;
+    for (int i = arr->size; i < NEW_CAPACITY; i++) {
+        arr->elements[i] = NULL;
+    }
+    arr->capacity = NEW_CAPACITY;
+}
+
+
+
+//takes an index and an element , saves a copy of the element in the specific index , frees the old element if exists .
+//returns result of the process (SUCCESS/FAIL)
+Result SetAdptArrayAt(PAdptArray arr, int index, PElement elem) {
+    if (index < 0) {
+        return FAIL;//index should be positive!
+    }
+    if (index >= arr->capacity) {
+        change_size(arr, index + 1);
+    }
+    if (index >= arr->size) {
+        for (int i = arr->size; i <= index; i++) {
+            free(arr->elements[i]);
+        }
+        arr->size = index + 1;
+    }
+    if (arr->elements[index] != NULL) {
+        free(arr->elements[index]);
+    }
+
+    
+    arr->elements[index] = arr->copy_func(elem) ;
+    return SUCCESS;//the process succeeded
+}
+
