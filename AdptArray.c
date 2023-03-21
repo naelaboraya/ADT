@@ -90,3 +90,34 @@ Result SetAdptArrayAt(PAdptArray arr, int index, PElement elem) {
     return SUCCESS;//the process succeeded
 }
 
+
+
+//returns the element at the specific index in the array
+PElement GetAdptArrayAt(PAdptArray arr, int index) {
+    if (index < 0 || index >= arr->size || arr->elements[index]==NULL) {
+        return NULL;
+    }
+    PElement pelem = arr->copy_func(arr->elements[index]);
+
+    return pelem;
+}
+
+//returns the size of the array
+int GetAdptArraySize(PAdptArray arr) {
+    if (arr == NULL){
+        return -1;//returns -1 if the array has not successfully initialized
+    }
+    return arr->size;
+}
+
+
+//prints the elements of the array
+void PrintDB(PAdptArray arr) {
+for (int i = 0; i < arr->size; i++) {
+if (arr->elements[i] != NULL) {//dont print NULL elements
+arr->print_func(arr->elements[i]);//calls print_func
+        } 
+    }
+}
+
+
